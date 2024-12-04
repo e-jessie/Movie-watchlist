@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 
-import "../styles/globals.css"; // Make sure your global styles are included
+import "../styles/globals.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Add any other head elements, like meta tags or fonts */}
       </head>
       <body>
-        <main>{children}</main>
+          <main>{children}</main>
       </body>
     </html>
   );

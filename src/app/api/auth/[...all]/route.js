@@ -17,7 +17,7 @@ const loginUser = async (req) => {
     try {
         await connectDB();
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).populate("watchlist");
         if (!user) {
             return {
                 status: 401,

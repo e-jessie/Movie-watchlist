@@ -5,7 +5,7 @@ const userSchema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String, required: true },
-    watchList: [{ type: Schema.Types.ObjectId, ref: 'Movie' }], 
+    watchlist: [{ type: Schema.Types.ObjectId, ref: 'Movie' }], 
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
@@ -29,7 +29,7 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 
 const movieSchema = new Schema(
     {
-        tmdb_id: { type: Number, required: true, unique: true },
+        id: { type: Number, required: true, unique: true },
         title: { type: String, required: true },
         original_title: String,
         overview: String,

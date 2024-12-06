@@ -1,5 +1,4 @@
 import { Movie } from "@/lib/models";
-import connectDB from "@/lib/mongodb";
 import { authenticate } from "../midlleware";
 
 export async function PATCH(req) {

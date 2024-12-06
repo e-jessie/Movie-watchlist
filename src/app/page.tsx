@@ -10,7 +10,7 @@ export default function HomePage() {
         <p className="text-lg text-white mb-2 px-4 py-2 leading-relaxed">
           Explore popular movies, manage your watchlist, and get personalized recommendations!
         </p>
-        <Button href="/auth/login" text="Let's Begin"/>
+        <Button href="/auth/signup" text="Let's Begin"/>
       </div>
     </div>
   );

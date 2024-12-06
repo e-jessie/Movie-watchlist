@@ -1,5 +1,6 @@
 import Image from "next/image";
-import Button from "./button";
+//import Button from "./button";
+
 
 
 export interface MovieCardProps {
@@ -26,7 +27,7 @@ export interface MovieCardProps {
         )}        
         <h2 className="text-heading-8 font-bold">{title}</h2>
         <p className="text-gray-700 text-sm">{overview}</p>
-        <Button href="/auth/login" text="Let's Begin" className="text-center mb-0"/>
+        {/* <Button href="/auth/login" text="Let's Begin" className="text-center mb-0"/> */}
       </div>
     );
   }

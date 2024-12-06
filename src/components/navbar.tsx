@@ -11,9 +11,9 @@ export default function Navbar() {
           <h1 className="text-2xl font-bold ">FILMLY</h1>
         </div>
         <div className="flex gap-8 items-center">
-          <Link href="/">Home</Link>
+          <Link href="/homepage">Home</Link>
           <Link href="/watchlist">Watchlist</Link>
-          <Link href="/login">Login</Link>
+          <Link href="/auth/login">Login</Link>
         </div>
       </div>
     </>

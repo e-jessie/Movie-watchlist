@@ -10,7 +10,8 @@ export async function GET(req) {
             );
         }
 
-        const { watchlist } = authResult.user;
+        const user = authResult.user;
+        const { watchlist } = user;
 
         // Step 1: Build genreMovieObj and convert to movie IDs array
         const genreMovieObj = {};
@@ -40,18 +41,19 @@ export async function GET(req) {
         const similarMoviesResults = await Promise.all(similarMoviesPromises);
 
         // Step 3: Flatten the results and limit to 20 movies
-        const allSimilarMovies = similarMoviesResults.flat(); 
+        const allSimilarMovies = similarMoviesResults.flat();
         const uniqueMovies = Array.from(
             new Map(allSimilarMovies.map((movie) => [movie.id, movie])).values()
         );
 
+        const recommendations = uniqueMovies.slice(0, 20);
+        const toReturn = { ...user._doc, recommendations }
 
-        const limitedMovies = uniqueMovies.slice(0, 20);
 
         return new Response(
             JSON.stringify({
                 message: "Movies retrieved successfully!",
-                movies: limitedMovies,
+                user: toReturn
             }),
             { status: 200 }
         );

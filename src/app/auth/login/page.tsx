@@ -49,7 +49,6 @@ export default function LoginPage() {
       })
 
       const json = await response.json()
-      console.log("API Response:", json); // checking log response from backend
       if (!response.ok) throw new Error(json.message)
 
       const { token } = json

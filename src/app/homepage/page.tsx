@@ -9,12 +9,11 @@ import LogoutButton from "@/components/LogoutButton";
 import SearchBar from "@/components/searchbar";
 import { useRouter } from "next/navigation";
 
+
+
 export default function HomePage() {
   const router = useRouter();
 
-  const token = localStorage.getItem("token")
-  if (!token)
-    router.push("/auth/signup")
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [user, setUser] = useState<{ name: string, watchlist: Movie[] }>();
@@ -23,6 +22,7 @@ export default function HomePage() {
 
 
   const toggleWatchlist = async (movie: Movie) => {
+
     setLoading(true)
     const token = localStorage.getItem('token')
 
@@ -34,7 +34,6 @@ export default function HomePage() {
       })
 
       const json = await response.json()
-      console.log("API Response:", json); // checking log response from backend
       if (!response.ok) throw new Error(json.message)
 
       setUser(json.user)
@@ -49,53 +48,55 @@ export default function HomePage() {
 
   useEffect(() => {
     console.log("useEffect triggered");
-
+  
     const fetchUser = async () => {
+      console.log("Fetching user...");
+      const token = localStorage.getItem("token"); // Move this inside fetchUser to avoid scope issues.
+  
+      if (!token) {
+        console.log("No token found, redirecting...");
+        router.push("/auth/signup");
+        return;
+      }
+  
       try {
         const response = await fetch("/api/user", {
           method: "GET",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-
-        })
-
-        const json = await response.json()
-        console.log("API Response:", json); // checking log response from backend
-        if (!response.ok) throw new Error(json.message)
-
-        setUser(json.user)
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
+          },
+        });
+  
+        const json = await response.json();
+        if (!response.ok) throw new Error(json.message);
+  
+        setUser(json.user);
       } catch (err) {
-        console.log(err);
-
-        router.push("/auth/signup")
-
+        console.error("Error fetching user:", err);
+        router.push("/auth/signup");
       }
-
-    }
-
-
+    };
+  
     const fetchMovies = async () => {
       try {
         console.log("Fetching movies...");
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
         );
-        console.log("Response:", response);
         if (!response.ok) throw new Error("Failed to fetch movies");
         const data = await response.json();
-        console.log(data.results)
         setMovies(data.results || []);
-      }
-      catch (error) {
+      } catch (error) {
         console.error("Error fetching movies:", error);
-        // setMovies([]); 
       }
     };
-
-
-
-    fetchUser()
+  
+    // Call the functions inside useEffect.
+    fetchUser();
     fetchMovies();
-  }, [router, token]);
+  }, [router]); // `token` is dynamically retrieved within fetchUser, so no need to include it here.
+  
 
 
   const closeModal = () => {
@@ -124,7 +125,7 @@ export default function HomePage() {
                 {movies.map((movie) => (
                   <div
                     key={movie.id}
-                    onClick={() => setSelectedMovie(movie)} // Open modal on click
+                    onClick={() => setSelectedMovie(movie)}
                   >
                     <MovieCard
                       key={movie.id}
@@ -138,8 +139,14 @@ export default function HomePage() {
             )}
           </div>
           {selectedMovie && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              onClick={closeModal}
+            >
+              <div
+                className="bg-white rounded-lg p-6 max-w-md w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h2 className="text-xl font-bold mb-4">{selectedMovie.title}</h2>
                 <Image
                   src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
@@ -154,16 +161,15 @@ export default function HomePage() {
                     onClick={() => {
                       toggleWatchlist(selectedMovie);
                     }}
-                    disabled={loading} // Disable button during loading
+                    disabled={loading}
                     className={`px-4 py-2 rounded text-white ${loading
-                      ? "bg-gray-300 cursor-not-allowed" // Styling for the disabled state
+                      ? "bg-gray-300 cursor-not-allowed"
                       : user.watchlist.some((movie) => movie.id === selectedMovie.id)
-                        ? "bg-red-500 hover:bg-red-700" // Remove from watchlist styling
-                        : "bg-blue-500 hover:bg-blue-700" // Add to watchlist styling
+                        ? "bg-red-500 hover:bg-red-700"
+                        : "bg-blue-500 hover:bg-blue-700"
                       }`}
-                  // className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 ${loading ? 'disabled:bg-gray-300' : ''}`}
                   >
-                    {loading ? ( // Show loader when loading
+                    {loading ? (
                       <span className="flex items-center gap-2">
                         <Loader />
                         Loading...
@@ -174,7 +180,6 @@ export default function HomePage() {
                       "Add to watchlist"
                     )}
 
-                    {/* {user.watchlist.some(movie => movie.id === selectedMovie.id) ? 'Remove from watchlist' : 'Add to watchlist'} */}
                   </button>
                   <button
                     onClick={closeModal}
@@ -190,6 +195,6 @@ export default function HomePage() {
       </ProtectedRoute>
 
     );
-    return null
+  return null
 }
 

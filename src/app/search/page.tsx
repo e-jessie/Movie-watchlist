@@ -100,18 +100,29 @@ export default function SearchResultsPage() {
         {searchResults.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                 {searchResults.map((movie) => (
+                  <div
+                    key={movie.id}
+                    onClick={() => setSelectedMovie(movie)}
+                  >
                     <MovieCard
-                        key={movie.id}
-                        title={movie.title}
-                        posterPath={movie.poster_path}
-                        overview={movie.overview}
+                      key={movie.id}
+                      title={movie.title}
+                      posterPath={movie.poster_path}
+                      overview={movie.overview}
                     />
+                  </div>
                 ))}
             </div>
         )}
         {selectedMovie && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div 
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              onClick={closeModal}
+            >
+              <div 
+                className="bg-white rounded-lg p-6 max-w-md w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h2 className="text-xl font-bold mb-4">{selectedMovie.title}</h2>
                 <Image
                   src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}

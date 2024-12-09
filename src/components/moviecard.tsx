@@ -11,7 +11,7 @@ export interface MovieCardProps {
   
   export default function MovieCard({ title, posterPath, overview }: MovieCardProps) {
     return (
-      <div className="max-w-sm bg-white rounded-xl shadow-md p-4 m-4 border hover:scale-105 transition-transform duration-300 flex flex-col gap-2">
+      <div className="h-[500px] max-w-sm bg-white rounded-xl shadow-md p-4 m-4 border hover:scale-105 transition-transform duration-300 flex flex-col gap-2">
         {posterPath ? (
           <Image
             src={`https://image.tmdb.org/t/p/w200${posterPath}`}

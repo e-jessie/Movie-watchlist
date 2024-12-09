@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 
+import { Suspense } from "react";
 import "../styles/globals.css";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Add any other head elements, like meta tags or fonts */}
       </head>
       <body>
-          <main>{children}</main>
+        <Suspense fallback={null}>
+
+          {children}
+
+        </Suspense>
       </body>
     </html>
   );

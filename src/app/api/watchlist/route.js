@@ -1,5 +1,5 @@
 import { Movie } from "@/lib/models";
-import { authenticate } from "../midlleware";
+import { authenticate } from "../middleware";
 
 export async function PATCH(req) {
     try {
@@ -40,7 +40,6 @@ export async function PATCH(req) {
 
             user.watchlist.push(movie);
             await user.save();
-            console.log(user);
             
             return new Response(JSON.stringify({ message: "Movie added to watchlist", user }), { status: 200 });
         }

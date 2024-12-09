@@ -1,5 +1,5 @@
 import { Movie } from "@/lib/models";
-import { authenticate } from "../midlleware";
+import { authenticate } from "../middleware";
 
 export async function PATCH(req) {
     try {

@@ -16,7 +16,7 @@ export async function GET(req) {
 
   
     } catch (error) {
-        console.error("Error in PUT /api/watchlist:", error);
+        console.error("Error in GET /api/user:", error);
         return new Response(JSON.stringify({ message: "Internal server error" }), { status: 500 });
     }
 }

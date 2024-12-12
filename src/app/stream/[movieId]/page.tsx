@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 
-export default function StreamPage({ params }: { params: { movieId: string } }) {
-    const { movieId } = params;
+export default function StreamPage(props: unknown) {
+    const { movieId } = (props as unknown as { params: { movieId: string } }).params;
 
     return (
         <div className="flex flex-col items-center p-4">

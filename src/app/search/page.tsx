@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import MovieCard from "@/components/moviecard";
 import Link from "next/link";
@@ -14,7 +14,7 @@ interface Movie {
   overview: string;
 }
 
-export default function SearchResultsPage() {
+function SearchResultsPage({ token }: { token: string }) {
   const searchParams = useSearchParams(); 
   const query = searchParams.get("query"); 
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
@@ -28,7 +28,6 @@ export default function SearchResultsPage() {
 
   const toggleWatchlist = async (movie: Movie) => {
     setLoading(true)
-    const token = localStorage.getItem('token')
 
     try {
       const response = await fetch("/api/watchlist", {
@@ -169,4 +168,27 @@ export default function SearchResultsPage() {
           )}
     </div>
   );
+}
+
+export default function ProtectedPage() {
+  const router = useRouter();
+  const [token, setToken] = useState<null | string>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+
+
+    if (!token) {
+      console.log("No token found, redirecting...");
+      router.push("/auth/signup");
+      return;
+    }
+
+    setToken(token)
+
+  }, [router]);
+
+  if (!token) return <p>Loading...</p>; // Show loading state while checking auth
+
+  return <SearchResultsPage token={token} />
 }

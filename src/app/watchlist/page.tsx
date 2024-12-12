@@ -96,17 +96,26 @@ function WatchlistPage({ token }: { token: string }) {
                       <p className="text-sm text-gray-700">{movie.overview}</p>
                     </div>
 
-                    <button
-                      onClick={() => removeFromWatchlist(movie)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mt-auto"
-                    >
-                      {loading === movie.id ? (
-                        <span className="flex items-center gap-2">
-                          <Loader />
-                          Loading...
-                        </span>
-                      ) : 'Remove'}
-                    </button>
+                    <div className="flex justify-between">
+                      <button
+                        onClick={() => removeFromWatchlist(movie)}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mt-auto"
+                      >
+                        {loading === movie.id ? (
+                          <span className="flex items-center gap-2">
+                            <Loader />
+                            Loading...
+                          </span>
+                        ) : 'Remove'}
+                      </button>
+                      <button
+                        onClick={() => router.push(`/stream/${movie.id}`)}
+                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                      >
+                        Watch
+                      </button>
+                    </div>
+                    
                   </div>
                 ))}
               </div>
@@ -127,8 +136,6 @@ function WatchlistPage({ token }: { token: string }) {
                         <h2 className="text-lg font-bold">{movie.title}</h2>
                         <p className="text-sm text-gray-700">{movie.overview}</p>
                       </div>
-
-
                     </div>
                   ))}
                 </div>

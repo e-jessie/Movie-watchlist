@@ -15,6 +15,7 @@ interface Movie {
 }
 
 function SearchResultsPage({ token }: { token: string }) {
+  const router = useRouter();
   const searchParams = useSearchParams(); 
   const query = searchParams.get("query"); 
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
@@ -162,6 +163,12 @@ function SearchResultsPage({ token }: { token: string }) {
                   >
                     Close
                   </button>
+                  <button
+                        onClick={() => router.push(`/stream/${selectedMovie.id}`)}
+                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                      >
+                        Watch
+                      </button>
                 </div>
               </div>
             </div>

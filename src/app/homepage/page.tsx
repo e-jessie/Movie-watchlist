@@ -94,7 +94,7 @@ function HomePage({ token }: { token: string }) {
     setSelectedMovie(null);
   };
 
-  if (user)
+  if (user) {
     return (
       <div>
         <div className="backdrop-blur-sm text-white px-10 py-10 flex flex-col gap-6">
@@ -177,6 +177,12 @@ function HomePage({ token }: { token: string }) {
                 >
                   Close
                 </button>
+                <button
+                  onClick={() => router.push(`/stream/${selectedMovie.id}`)}
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                >
+                  Watch
+                </button>
               </div>
             </div>
           </div>
@@ -184,7 +190,10 @@ function HomePage({ token }: { token: string }) {
       </div>
 
     );
-  return null
+  }
+  else {
+    return null
+  }
 }
 
 export default function ProtectedPage() {

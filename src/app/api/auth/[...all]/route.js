@@ -18,12 +18,18 @@ const loginUser = async (req) => {
         await connectDB();
 
         const user = await User.findOne({ email }).populate("watchlist");
+        user.watchlist = user.watchlist.reverse()
+
+
         if (!user) {
             return {
                 status: 401,
                 body: { message: "Invalid credentials" },
             };
         }
+
+        user.watchlist = user.watchlist.reverse()
+
 
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {

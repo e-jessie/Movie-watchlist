@@ -13,7 +13,6 @@ export default function Navbar() {
         <div className="flex gap-8 items-center">
           <Link href="/homepage">Home</Link>
           <Link href="/watchlist">Watchlist</Link>
-          <Link href="/auth/login">Login</Link>
         </div>
       </div>
     </>

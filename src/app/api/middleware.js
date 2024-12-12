@@ -17,7 +17,8 @@ export const authenticate = async (req) => {
 
         await connectDB();
 
-        const user = await User.findById(decodedToken.userId).populate("watchlist");
+        const user = await User.findById(decodedToken.userId).populate("watchlist")
+        user.watchlist = user.watchlist.reverse()
         if (!user) {
             return { status: 404, message: "User not found" };
         }

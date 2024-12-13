@@ -7,6 +7,8 @@ import { Loader } from "../../../public/icons/loader"
 import LogoutButton from "@/components/LogoutButton";
 import SearchBar from "@/components/searchbar";
 import { useRouter } from "next/navigation";
+import { PageLoader } from "../../../public/icons/pageloader";
+import { Exit } from "../../../public/icons/exit";
 
 
 
@@ -83,10 +85,9 @@ function HomePage({ token }: { token: string }) {
       }
     };
 
-    // Call the functions inside useEffect.
     fetchUser();
     fetchMovies();
-  }, [router, token]); // `token` is dynamically retrieved within fetchUser, so no need to include it here.
+  }, [router, token]);
 
 
 
@@ -107,7 +108,7 @@ function HomePage({ token }: { token: string }) {
           </div>
         </div>
         <div className="movies px-10 py-4 text-gray-700 bg-white">
-          <h1 className="text-3xl font-bold mb-4">Popular Movies</h1>
+          <h1 className="text-4xl font-bold my-7 ml-4">Popular Movies</h1>
           {!movies.length ? (
             <p className="text-gray-700 text-center">Loading movies...</p>
           ) : (
@@ -134,19 +135,35 @@ function HomePage({ token }: { token: string }) {
             onClick={closeModal}
           >
             <div
-              className="bg-white rounded-lg p-6 max-w-md w-full"
+              className="bg-white rounded-lg p-6 max-w-md w-full relative"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-xl font-bold mb-4">{selectedMovie.title}</h2>
-              <Image
-                src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
-                alt={selectedMovie.title}
-                width={150}
-                height={100}
-                className="rounded-lg mb-4"
-              />
-              <p className="text-gray-700">{selectedMovie.overview}</p>
-              <div className="flex gap-4 mt-4">
+              <h2 className="text-xl font-bold mb-4 max-w-[300px]">{selectedMovie.title}</h2>
+              <div className="absolute top-0 right-0 p-4" onClick={closeModal}><Exit /></div>
+              {selectedMovie.poster_path ? (
+                <Image
+                  src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                  alt={selectedMovie.title}
+                  width={150}
+                  height={100}
+                  className="rounded-lg mb-4"
+                />
+              ) : (
+                <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                  <Image
+                    src="/images/filmlyIcon.png"
+                    alt={selectedMovie.title}
+                    width={150}
+                    height={150}
+                  />
+                </div>
+              )}
+              {selectedMovie.overview ? (
+                <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+              ) : (
+                <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+              )}
+              <div className="flex gap-4 mt-4 justify-between">
                 <button
                   onClick={() => {
                     toggleWatchlist(selectedMovie);
@@ -162,7 +179,7 @@ function HomePage({ token }: { token: string }) {
                   {loading ? (
                     <span className="flex items-center gap-2">
                       <Loader />
-                      Loading...
+                      <span>Loading...</span>
                     </span>
                   ) : user.watchlist.some((movie) => movie.id === selectedMovie.id) ? (
                     "Remove from watchlist"
@@ -171,15 +188,15 @@ function HomePage({ token }: { token: string }) {
                   )}
 
                 </button>
-                <button
+                {/* <button
                   onClick={closeModal}
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
                 >
                   Close
-                </button>
+                </button> */}
                 <button
                   onClick={() => router.push(`/stream/${selectedMovie.id}`)}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                  className="px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-600"
                 >
                   Watch
                 </button>
@@ -214,7 +231,7 @@ export default function ProtectedPage() {
 
   }, [router]);
 
-  if (!token) return <p>Loading...</p>; // Show loading state while checking auth
+  if (!token) return <PageLoader />; // Show loading state while checking auth
 
   return <HomePage token={token} />
 }

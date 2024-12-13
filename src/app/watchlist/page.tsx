@@ -5,6 +5,7 @@ import { Movie } from "../../types/movie";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader } from "../../../public/icons/loader";
+import { PageLoader } from "../../../public/icons/pageloader"
 import Link from "next/link";
 
 
@@ -70,34 +71,107 @@ function WatchlistPage({ token }: { token: string }) {
 
 
   if (pageLoad) {
-    return <h1>Loading...</h1>
+    return (
+      <div>
+        <PageLoader />
+      </div>
+    )
   }
   else {
     return (
-        <div className="container flex flex-col gap-4 mx-auto p-4">
-          <h1 className="text-3xl font-bold mb-4">Your Watchlist</h1>
-          <Link href="/homepage" className="text-blue-500 hover:underline w-[200px]">
-            Back to Homepage
-          </Link>
-          {user && user.watchlist.length > 0 ? (
-            <div className="flex flex-col gap-[150px]">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {user.watchlist.map((movie, index) => (
-                  <div key={movie.id || `watchlist-${index}`} className="bg-white rounded-lg shadow-md p-4">
-                    <div className="flex flex-col justify-between">
+      <div className="container flex flex-col gap-4 mx-auto p-4">
+        <Link href="/homepage" className="text-blue-500 hover:underline w-[200px] mt-4">
+          Back to Homepage
+        </Link>
+        <h1 className="text-3xl font-bold mb-4">Your Watchlist</h1>
+        {user && user.watchlist.length > 0 ? (
+          <div className="flex flex-col gap-[150px]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {user.watchlist.map((movie, index) => (
+                <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
+                  <div className="h-[500px] flex flex-col max-w-sm gap-2">
+                    {movie.poster_path ? (
                       <Image
-                        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                        src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                         alt={movie.title}
+                        className="rounded-xl mb-4"
                         width={150}
                         height={100}
-                        className="rounded-lg mb-4"
                       />
-                      <h2 className="text-lg font-bold">{movie.title}</h2>
-                      <p className="text-sm text-gray-700">{movie.overview}</p>
-                    </div>
+                    ) : (
+                      <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                        <Image
+                          src="/images/filmlyIcon.png"
+                          alt={movie.title}
+                          width={150}
+                          height={150}
+                        />
+                      </div>
+                    )}
+                    <h2 className="text-lg font-bold">{movie.title}</h2>
+                    {movie.overview ? (
+                      <p className="text-sm text-gray-700 overflow-y-auto">{movie.overview}</p>
+                    ) : (
+                      <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+                    )}
+                  </div>
+                  <div className="flex justify-between">
+                    <button
+                      onClick={() => removeFromWatchlist(movie)}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mt-auto"
+                    >
+                      {loading === movie.id ? (
+                        <span className="flex items-center gap-2">
+                          <Loader />
+                          Loading...
+                        </span>
+                      ) : 'Remove'}
+                    </button>
+                    <button
+                      onClick={() => router.push(`/stream/${movie.id}`)}
+                      className="px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-600"
+                    >
+                      Watch
+                    </button>
+                  </div>
 
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <h1 className="text-3xl my-10">Recommendations Based on your watchlist</h1>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {user.recommendations.map((movie, index) => (
+                  <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
+                    <div className="h-[500px] flex flex-col max-w-sm gap-2">
+                      {movie.poster_path ? (
+                        <Image
+                          src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                          alt={movie.title}
+                          className="rounded-xl mb-4"
+                          width={150}
+                          height={100}
+                        />
+                      ) : (
+                        <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                          <Image
+                            src="/images/filmlyIcon.png"
+                            alt={movie.title}
+                            width={150}
+                            height={150}
+                          />
+                        </div>
+                      )}
+                      <h2 className="text-lg font-bold">{movie.title}</h2>
+                      {movie.overview ? (
+                        <p className="text-sm text-gray-700 overflow-y-auto">{movie.overview}</p>
+                      ) : (
+                        <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+                      )}
+                    </div>
                     <div className="flex justify-between">
-                      <button
+                      {/* <button
                         onClick={() => removeFromWatchlist(movie)}
                         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mt-auto"
                       >
@@ -107,44 +181,23 @@ function WatchlistPage({ token }: { token: string }) {
                             Loading...
                           </span>
                         ) : 'Remove'}
-                      </button>
+                      </button> */}
                       <button
                         onClick={() => router.push(`/stream/${movie.id}`)}
-                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                        className="px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-600"
                       >
                         Watch
                       </button>
                     </div>
-                    
                   </div>
                 ))}
               </div>
-
-              <div>
-                <h1 className="text-3xl my-10">Recommendations Based on your watchlist</h1>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {user.recommendations.map((movie, index) => (
-                    <div key={movie.id || `watchlist-${index}`} className="bg-white rounded-lg shadow-md p-4">
-                      <div className="flex flex-col justify-between">
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                          alt={movie.title}
-                          width={150}
-                          height={100}
-                          className="rounded-lg mb-4"
-                        />
-                        <h2 className="text-lg font-bold">{movie.title}</h2>
-                        <p className="text-sm text-gray-700">{movie.overview}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          ) : (
-            <p className="text-rose-900">Your watchlist is empty.</p>
-          )}
-        </div>
+          </div>
+        ) : (
+          <p className="text-rose-900">Your watchlist is empty.</p>
+        )}
+      </div>
 
     )
   }
@@ -170,7 +223,7 @@ export default function ProtectedPage() {
 
   }, [router, token]);
 
-  if (!token) return <p>Loading...</p>; // Show loading state while checking auth
+  if (!token) return <PageLoader />; // Show loading state while checking auth
 
   return <WatchlistPage token={token} />
 }

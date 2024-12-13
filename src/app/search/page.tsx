@@ -6,6 +6,8 @@ import MovieCard from "@/components/moviecard";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader } from "../../../public/icons/loader";
+import { PageLoader } from "../../../public/icons/pageloader";
+import { Exit } from "../../../public/icons/exit";
 
 interface Movie {
   id: number;
@@ -16,8 +18,8 @@ interface Movie {
 
 function SearchResultsPage({ token }: { token: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams(); 
-  const query = searchParams.get("query"); 
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query");
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,7 @@ function SearchResultsPage({ token }: { token: string }) {
       })
 
       const json = await response.json()
-      console.log("API Response:", json); 
+      console.log("API Response:", json);
       if (!response.ok) throw new Error(json.message)
 
       setUser(json.user)
@@ -88,91 +90,104 @@ function SearchResultsPage({ token }: { token: string }) {
 
 
   return (
-    <div className="container mx-auto p-4">
-        <Link href="/homepage" className="text-blue-500 hover:underline">
-            Back to Homepage
-        </Link>
-        <h1 className="text-3xl font-bold mb-6">
-            Search Results for &quot;{query}&quot;
-        </h1>        
-        {isLoading && <p className="text-gray-700 mt-4">Searching...</p>}
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-        {searchResults.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-                {searchResults.map((movie) => (
-                  <div
-                    key={movie.id}
-                    onClick={() => setSelectedMovie(movie)}
-                  >
-                    <MovieCard
-                      key={movie.id}
-                      title={movie.title}
-                      posterPath={movie.poster_path}
-                      overview={movie.overview}
-                    />
-                  </div>
-                ))}
-            </div>
-        )}
-        {selectedMovie && (
-            <div 
-              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-              onClick={closeModal}
+    <div className="container mx-auto p-4 flex flex-col gap-8">
+      {isLoading && <PageLoader />}
+      <Link href="/homepage" className="text-blue-500 hover:underline w-[200px] mt-4">
+        Back to Homepage
+      </Link>
+      <h1 className="text-3xl font-bold mb-6">
+        Search Results for &quot;{query}&quot;
+      </h1>
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {searchResults.length === 0 && !isLoading && !error && (
+        <h1 className="flex justify-center text-xl text-red-500">Your search for <span className="font-extrabold">&quot;{query}&quot;</span> returned no results.</h1>
+      )}
+      {searchResults.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+          {searchResults.map((movie) => (
+            <div
+              key={movie.id}
+              onClick={() => setSelectedMovie(movie)}
             >
-              <div 
-                className="bg-white rounded-lg p-6 max-w-md w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h2 className="text-xl font-bold mb-4">{selectedMovie.title}</h2>
+              <MovieCard
+                key={movie.id}
+                title={movie.title}
+                posterPath={movie.poster_path}
+                overview={movie.overview}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      {selectedMovie && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-lg p-6 max-w-md w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-bold mb-4 max-w-[300px]">{selectedMovie.title}</h2>
+            <div className="absolute top-0 right-0 p-4" onClick={closeModal}><Exit /></div>
+            {selectedMovie.poster_path ? (
+              <Image
+                src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                alt={selectedMovie.title}
+                width={150}
+                height={100}
+                className="rounded-lg mb-4"
+              />
+            ) : (
+              <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
                 <Image
-                  src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                  src="/images/filmlyIcon.png"
                   alt={selectedMovie.title}
                   width={150}
-                  height={100}
-                  className="rounded-lg mb-4"
+                  height={150}
                 />
-                <p className="text-gray-700">{selectedMovie.overview}</p>
-                <div className="flex gap-4 mt-4">
-                  <button
-                    onClick={() => {
-                      toggleWatchlist(selectedMovie);
-                    }}
-                    disabled={loading}
-                    className={`px-4 py-2 rounded text-white ${loading
-                      ? "bg-gray-300 cursor-not-allowed" 
-                      : user?.watchlist.some((movie) => movie.id === selectedMovie.id)
-                        ? "bg-red-500 hover:bg-red-700" 
-                        : "bg-blue-500 hover:bg-blue-700"
-                      }`}
-                  >
-                    {loading ? (
-                      <span className="flex items-center gap-2">
-                        <Loader />
-                        Loading...
-                      </span>
-                    ) : user?.watchlist.some((movie) => movie.id === selectedMovie.id) ? (
-                      "Remove from watchlist"
-                    ) : (
-                      "Add to watchlist"
-                    )}
-
-                  </button>
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                  >
-                    Close
-                  </button>
-                  <button
-                        onClick={() => router.push(`/stream/${selectedMovie.id}`)}
-                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                      >
-                        Watch
-                      </button>
-                </div>
               </div>
+            )}
+            {selectedMovie.overview ? (
+              <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+            ) : (
+              <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+            )}
+            <div className="flex gap-4 mt-4 justify-between">
+              <button
+                onClick={() => {
+                  toggleWatchlist(selectedMovie);
+                }}
+                disabled={loading}
+                className={`px-4 py-2 rounded text-white ${loading
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : user?.watchlist.some((movie) => movie.id === selectedMovie.id)
+                    ? "bg-red-500 hover:bg-red-700"
+                    : "bg-blue-500 hover:bg-blue-700"
+                  }`}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader />
+                    Loading...
+                  </span>
+                ) : user?.watchlist.some((movie) => movie.id === selectedMovie.id) ? (
+                  "Remove from watchlist"
+                ) : (
+                  "Add to watchlist"
+                )}
+
+              </button>
+              <button
+                onClick={() => router.push(`/stream/${selectedMovie.id}`)}
+                className="px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-600"
+              >
+                Watch
+              </button>
             </div>
-          )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import { Loader } from "../../../public/icons/loader";
 import { PageLoader } from "../../../public/icons/pageloader"
 import Link from "next/link";
+import ScrollToTop from "@/components/ScrollToTop";
+import { Bell } from "../../../public/icons/bell";
+import { CalendarPopup } from "@/components/Calender";
+
 
 
 function WatchlistPage({ token }: { token: string }) {
@@ -14,6 +18,7 @@ function WatchlistPage({ token }: { token: string }) {
   const [user, setUser] = useState<{ name: string, watchlist: Movie[], recommendations: Movie[] }>();
   const [pageLoad, setPageLoad] = useState(true)
   const [loading, setLoading] = useState(0)
+  const [showCalendar, setShowCalendar] = useState(false);
 
 
   useEffect(() => {
@@ -90,24 +95,35 @@ function WatchlistPage({ token }: { token: string }) {
               {user.watchlist.map((movie, index) => (
                 <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
                   <div className="h-[500px] flex flex-col max-w-sm gap-2">
-                    {movie.poster_path ? (
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                        alt={movie.title}
-                        className="rounded-xl mb-4"
-                        width={150}
-                        height={100}
-                      />
-                    ) : (
-                      <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                    <div className="flex gap-4 items-baseline">
+                      {movie.poster_path ? (
                         <Image
-                          src="/images/filmlyIcon.png"
+                          src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                           alt={movie.title}
+                          className="rounded-xl mb-4"
                           width={150}
-                          height={150}
+                          height={100}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                          <Image
+                            src="/images/filmlyIcon.png"
+                            alt={movie.title}
+                            width={150}
+                            height={150}
+                          />
+                        </div>
+                      )}
+                      <Bell onClick={() => setShowCalendar(false)} />
+                      {showCalendar && (
+                        <CalendarPopup
+                          movieTitle={movie.title}
+                          movieDescription={movie.overview}
+                          onClose={() => setShowCalendar(false)} // Close popup on cancel
+                        />
+                      )}
+                    </div>
+
                     <h2 className="text-lg font-bold">{movie.title}</h2>
                     {movie.overview ? (
                       <p className="text-sm text-gray-700 overflow-y-auto">{movie.overview}</p>
@@ -145,24 +161,35 @@ function WatchlistPage({ token }: { token: string }) {
                 {user.recommendations.map((movie, index) => (
                   <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
                     <div className="h-[500px] flex flex-col max-w-sm gap-2">
-                      {movie.poster_path ? (
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                          alt={movie.title}
-                          className="rounded-xl mb-4"
-                          width={150}
-                          height={100}
-                        />
-                      ) : (
-                        <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                      <div className="flex items-baseline gap-4">
+                        {movie.poster_path ? (
                           <Image
-                            src="/images/filmlyIcon.png"
+                            src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
                             alt={movie.title}
+                            className="rounded-xl mb-4"
                             width={150}
-                            height={150}
+                            height={100}
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                            <Image
+                              src="/images/filmlyIcon.png"
+                              alt={movie.title}
+                              width={150}
+                              height={150}
+                            />
+                          </div>
+                        )}
+                        <Bell onClick={() => setShowCalendar(true)}/>
+                        {showCalendar && (
+                          <CalendarPopup
+                            movieTitle={movie.title}
+                            movieDescription={movie.overview}
+                            onClose={() => setShowCalendar(false)} // Close popup on cancel
+                          />
+                        )}
+                      </div>
+
                       <h2 className="text-lg font-bold">{movie.title}</h2>
                       {movie.overview ? (
                         <p className="text-sm text-gray-700 overflow-y-auto">{movie.overview}</p>
@@ -197,6 +224,8 @@ function WatchlistPage({ token }: { token: string }) {
         ) : (
           <p className="text-rose-900">Your watchlist is empty.</p>
         )}
+
+        <ScrollToTop />
       </div>
 
     )

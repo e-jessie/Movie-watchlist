@@ -2,9 +2,8 @@
 export const PageLoader = () => {
 
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center mx-auto w-[100px] h-screen">
       <svg
-        className="w-24 h-24"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 120 30"

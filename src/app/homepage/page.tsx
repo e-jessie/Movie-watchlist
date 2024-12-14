@@ -9,7 +9,9 @@ import SearchBar from "@/components/searchbar";
 import { useRouter } from "next/navigation";
 import { PageLoader } from "../../../public/icons/pageloader";
 import { Exit } from "../../../public/icons/exit";
-
+import ScrollToTop from "@/components/ScrollToTop"
+import { Bell } from "../../../public/icons/bell";
+import { CalendarPopup } from "@/components/Calender";
 
 
 function HomePage({ token }: { token: string }) {
@@ -20,6 +22,7 @@ function HomePage({ token }: { token: string }) {
   const [user, setUser] = useState<{ name: string, watchlist: Movie[] }>();
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false);
 
 
   const toggleWatchlist = async (movie: Movie) => {
@@ -98,10 +101,9 @@ function HomePage({ token }: { token: string }) {
   if (user) {
     return (
       <div>
-        <div className="backdrop-blur-sm text-white px-10 py-10 flex flex-col gap-6">
+        <div className="backdrop-blur-sm text-white px-10 py-10 flex flex-col gap-4">
           {user && <h1 className="text-heading-1">Hey, {user.name}</h1>}
           <h1 className="text-heading-2">Welcome to FILMLY </h1>
-          <p className="text-heading-4">Popular Movies and TV Shows to discover. Explore Now.</p>
           <SearchBar />
           <div>
             <LogoutButton />
@@ -135,34 +137,48 @@ function HomePage({ token }: { token: string }) {
             onClick={closeModal}
           >
             <div
-              className="bg-white rounded-lg p-6 max-w-md w-full relative"
+              className="bg-white rounded-lg p-6 max-w-md w-full relative m-6"
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="text-xl font-bold mb-4 max-w-[300px]">{selectedMovie.title}</h2>
               <div className="absolute top-0 right-0 p-4" onClick={closeModal}><Exit /></div>
-              {selectedMovie.poster_path ? (
-                <Image
-                  src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
-                  alt={selectedMovie.title}
-                  width={150}
-                  height={100}
-                  className="rounded-lg mb-4"
-                />
-              ) : (
-                <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
-                  <Image
-                    src="/images/filmlyIcon.png"
-                    alt={selectedMovie.title}
-                    width={150}
-                    height={150}
-                  />
+              <div>
+                <div className="flex gap-4 items-baseline">
+                  {selectedMovie.poster_path ? (
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                      alt={selectedMovie.title}
+                      width={150}
+                      height={100}
+                      className="rounded-lg mb-4"
+                    />
+                  ) : (
+                    <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                      <Image
+                        src="/images/filmlyIcon.png"
+                        alt={selectedMovie.title}
+                        width={150}
+                        height={150}
+                      />
+                    </div>
+                  )}
+                  <Bell onClick={() => setShowCalendar(true)} />
+
+                  {showCalendar && (
+                    <CalendarPopup
+                      movieTitle={selectedMovie.title}
+                      movieDescription={selectedMovie.overview}
+                      onClose={() => setShowCalendar(false)} // Close popup on cancel
+                    />
+                  )}
                 </div>
-              )}
-              {selectedMovie.overview ? (
-                <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
-              ) : (
-                <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
-              )}
+                {selectedMovie.overview ? (
+                  <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+                ) : (
+                  <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+                )}
+              </div>
+
               <div className="flex gap-4 mt-4 justify-between">
                 <button
                   onClick={() => {
@@ -204,6 +220,8 @@ function HomePage({ token }: { token: string }) {
             </div>
           </div>
         )}
+
+        <ScrollToTop />
       </div>
 
     );

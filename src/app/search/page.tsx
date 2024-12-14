@@ -8,6 +8,9 @@ import Image from "next/image";
 import { Loader } from "../../../public/icons/loader";
 import { PageLoader } from "../../../public/icons/pageloader";
 import { Exit } from "../../../public/icons/exit";
+import ScrollToTop from "@/components/ScrollToTop";
+import { Bell } from "../../../public/icons/bell";
+import { CalendarPopup } from "@/components/Calender";
 
 interface Movie {
   id: number;
@@ -26,6 +29,8 @@ function SearchResultsPage({ token }: { token: string }) {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState<{ name: string, watchlist: Movie[] }>();
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+
 
 
 
@@ -125,34 +130,47 @@ function SearchResultsPage({ token }: { token: string }) {
           onClick={closeModal}
         >
           <div
-            className="bg-white rounded-lg p-6 max-w-md w-full relative"
+            className="bg-white rounded-lg p-6 max-w-md w-full relative m-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold mb-4 max-w-[300px]">{selectedMovie.title}</h2>
-            <div className="absolute top-0 right-0 p-4" onClick={closeModal}><Exit /></div>
-            {selectedMovie.poster_path ? (
-              <Image
-                src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
-                alt={selectedMovie.title}
-                width={150}
-                height={100}
-                className="rounded-lg mb-4"
-              />
-            ) : (
-              <div className="h-[270px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
-                <Image
-                  src="/images/filmlyIcon.png"
-                  alt={selectedMovie.title}
-                  width={150}
-                  height={150}
-                />
+            <div className="absolute top-0 right-0 p-4 w-20 h-20" onClick={closeModal}><Exit /></div>
+            <div>
+              <div className="flex items-baseline gap-4">
+                {selectedMovie.poster_path ? (
+                  <Image
+                    src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                    alt={selectedMovie.title}
+                    width={150}
+                    height={100}
+                    className="rounded-lg mb-4"
+                  />
+                ) : (
+                  <div className="h-[100px] w-[150px] bg-gray-500 rounded-xl mb-4 flex items-center justify-center">
+                    <Image
+                      src="/images/filmlyIcon.png"
+                      alt={selectedMovie.title}
+                      width={150}
+                      height={150}
+                    />
+                  </div>
+                )}
+                <Bell onClick={() => setShowCalendar(false)} />
+
+                {showCalendar && (
+                  <CalendarPopup
+                    movieTitle={selectedMovie.title}
+                    movieDescription={selectedMovie.overview}
+                    onClose={() => setShowCalendar(false)} 
+                  />
+                )}
               </div>
-            )}
-            {selectedMovie.overview ? (
-              <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
-            ) : (
-              <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
-            )}
+              {selectedMovie.overview ? (
+                <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+              ) : (
+                <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
+              )}
+            </div>
             <div className="flex gap-4 mt-4 justify-between">
               <button
                 onClick={() => {
@@ -188,6 +206,8 @@ function SearchResultsPage({ token }: { token: string }) {
           </div>
         </div>
       )}
+
+      <     ScrollToTop />
     </div>
   );
 }
@@ -210,7 +230,7 @@ export default function ProtectedPage() {
 
   }, [router]);
 
-  if (!token) return <p>Loading...</p>; // Show loading state while checking auth
+  if (!token) return <p>Loading...</p>;
 
   return <SearchResultsPage token={token} />
 }

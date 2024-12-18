@@ -1,8 +1,8 @@
 
 export const PageLoader = () => {
 
-    return (
-        <div className="flex justify-center items-center mx-auto w-[100px] h-screen">
+  return (
+    <div className="w-[400px] m-auto flex justify-center items-center h-screen">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -91,5 +91,5 @@ export const PageLoader = () => {
         </circle>
       </svg>
     </div>
-    );
+  );
 };

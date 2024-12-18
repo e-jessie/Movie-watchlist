@@ -22,7 +22,7 @@ function HomePage({ token }: { token: string }) {
   const [user, setUser] = useState<{ name: string, watchlist: Movie[] }>();
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(false)
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarMovieId, setCalendarMovieId] = useState<number | null>(null);
 
 
   const toggleWatchlist = async (movie: Movie) => {
@@ -96,12 +96,13 @@ function HomePage({ token }: { token: string }) {
 
   const closeModal = () => {
     setSelectedMovie(null);
+    setCalendarMovieId(null);
   };
 
   if (user) {
     return (
       <div>
-        <div className="backdrop-blur-sm text-white px-10 py-10 flex flex-col gap-4">
+        <div className="backdrop-blur-sm text-white px-10 py-10 flex flex-col gap-3">
           {user && <h1 className="text-heading-1">Hey, {user.name}</h1>}
           <h1 className="text-heading-2">Welcome to FILMLY </h1>
           <SearchBar />
@@ -114,7 +115,7 @@ function HomePage({ token }: { token: string }) {
           {!movies.length ? (
             <p className="text-gray-700 text-center">Loading movies...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {movies.map((movie) => (
                 <div
                   key={movie.id}
@@ -162,18 +163,18 @@ function HomePage({ token }: { token: string }) {
                       />
                     </div>
                   )}
-                  <Bell onClick={() => setShowCalendar(true)} />
+                  <Bell onClick={() => setCalendarMovieId(selectedMovie.id)} />
 
-                  {showCalendar && (
+                  {calendarMovieId === selectedMovie.id && (
                     <CalendarPopup
                       movieTitle={selectedMovie.title}
                       movieDescription={selectedMovie.overview}
-                      onClose={() => setShowCalendar(false)} // Close popup on cancel
+                      onClose={() => setSelectedMovie(null)} 
                     />
                   )}
                 </div>
                 {selectedMovie.overview ? (
-                  <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+                  <p className="text-gray-700 h-[200px] overflow-y-auto">{selectedMovie.overview}</p>
                 ) : (
                   <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
                 )}
@@ -221,7 +222,7 @@ function HomePage({ token }: { token: string }) {
           </div>
         )}
 
-        <ScrollToTop />
+        <div className="flex justify-center"><ScrollToTop /></div>
       </div>
 
     );

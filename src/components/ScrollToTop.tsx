@@ -28,7 +28,7 @@ const ScrollToTop = () => {
     isVisible && (
       <div
         onClick={scrollToTop}
-        className="fixed bottom-4 right-[50%] h-10 w-10 p-3 bg-gray-400 text-white rounded-full cursor-pointer hover:bg-gray-900 transition duration-300 ease-in-out"
+        className="fixed bottom-4 right[48%] h-10 w-10 p-3 bg-gray-400 text-white rounded-full cursor-pointer hover:bg-gray-900 transition duration-300 ease-in-out"
       >
         <Scrollbutton />
       </div>

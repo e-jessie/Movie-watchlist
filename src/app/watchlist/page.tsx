@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Movie } from "../../types/movie";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Loader } from "../../../public/icons/loader";
+import { useState, useEffect } from "react"
+import { Movie } from "../../types/movie"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { Loader } from "../../../public/icons/loader"
 import { PageLoader } from "../../../public/icons/pageloader"
-import Link from "next/link";
-import ScrollToTop from "@/components/ScrollToTop";
-import { Bell } from "../../../public/icons/bell";
-import { CalendarPopup } from "@/components/Calender";
+import Link from "next/link"
+import ScrollToTop from "@/components/ScrollToTop"
+import { Bell } from "../../../public/icons/bell"
+import { CalendarPopup } from "@/components/Calender"
 
 
 
 function WatchlistPage({ token }: { token: string }) {
-  const router = useRouter();
-  const [user, setUser] = useState<{ name: string, watchlist: Movie[], recommendations: Movie[] }>();
+  const router = useRouter()
+  const [user, setUser] = useState<{ name: string, watchlist: Movie[], recommendations: Movie[] }>()
   const [pageLoad, setPageLoad] = useState(true)
   const [loading, setLoading] = useState(0)
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarMovieId, setCalendarMovieId] = useState<number | null>(null);
 
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function WatchlistPage({ token }: { token: string }) {
 
         })
         const json = await response.json()
-        console.log("API Response:", json); // checking log response from backend
+        console.log("API Response:", json)
         if (!response.ok) throw new Error(json.message)
 
         setUser(json.user)
@@ -39,7 +39,7 @@ function WatchlistPage({ token }: { token: string }) {
         setPageLoad(false)
       }
       catch (err) {
-        console.log(err);
+        console.log(err)
         setPageLoad(false)
         router.push("/auth/signup")
       }
@@ -49,8 +49,7 @@ function WatchlistPage({ token }: { token: string }) {
   }, [router, token]);
 
   const removeFromWatchlist = async (movie: Movie) => {
-    console.log(movie);
-
+    console.log(movie)
     setLoading(movie.id)
 
     try {
@@ -69,7 +68,6 @@ function WatchlistPage({ token }: { token: string }) {
 
     } catch (error) {
       console.log(error);
-
     }
   };
 
@@ -77,7 +75,7 @@ function WatchlistPage({ token }: { token: string }) {
 
   if (pageLoad) {
     return (
-      <div>
+      <div className="">
         <PageLoader />
       </div>
     )
@@ -91,7 +89,7 @@ function WatchlistPage({ token }: { token: string }) {
         <h1 className="text-3xl font-bold mb-4">Your Watchlist</h1>
         {user && user.watchlist.length > 0 ? (
           <div className="flex flex-col gap-[150px]">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {user.watchlist.map((movie, index) => (
                 <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
                   <div className="h-[500px] flex flex-col max-w-sm gap-2">
@@ -114,14 +112,7 @@ function WatchlistPage({ token }: { token: string }) {
                           />
                         </div>
                       )}
-                      <Bell onClick={() => setShowCalendar(false)} />
-                      {showCalendar && (
-                        <CalendarPopup
-                          movieTitle={movie.title}
-                          movieDescription={movie.overview}
-                          onClose={() => setShowCalendar(false)} // Close popup on cancel
-                        />
-                      )}
+                      <Bell onClick={() => setCalendarMovieId(movie.id)} />
                     </div>
 
                     <h2 className="text-lg font-bold">{movie.title}</h2>
@@ -150,14 +141,20 @@ function WatchlistPage({ token }: { token: string }) {
                       Watch
                     </button>
                   </div>
-
+                  {calendarMovieId === movie.id && (
+                    <CalendarPopup
+                      movieTitle={movie.title}
+                      movieDescription={movie.overview}
+                      onClose={() => setCalendarMovieId(null)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
 
             <div>
               <h1 className="text-3xl my-10">Recommendations Based on your watchlist</h1>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {user.recommendations.map((movie, index) => (
                   <div key={movie.id || `watchlist-${index}`} className="flex flex-col gap-3 bg-white rounded-xl shadow-md p-4 m-4 hover:scale-105 transition-transform duration-300">
                     <div className="h-[500px] flex flex-col max-w-sm gap-2">
@@ -180,12 +177,13 @@ function WatchlistPage({ token }: { token: string }) {
                             />
                           </div>
                         )}
-                        <Bell onClick={() => setShowCalendar(true)}/>
-                        {showCalendar && (
+                        <Bell onClick={() => setCalendarMovieId(movie.id)} />
+
+                        {calendarMovieId === movie.id && (
                           <CalendarPopup
                             movieTitle={movie.title}
                             movieDescription={movie.overview}
-                            onClose={() => setShowCalendar(false)} // Close popup on cancel
+                            onClose={() => setCalendarMovieId(null)}
                           />
                         )}
                       </div>
@@ -224,8 +222,7 @@ function WatchlistPage({ token }: { token: string }) {
         ) : (
           <p className="text-rose-900">Your watchlist is empty.</p>
         )}
-
-        <ScrollToTop />
+        <div className="flex justify-center"><ScrollToTop /></div>
       </div>
 
     )
@@ -252,7 +249,7 @@ export default function ProtectedPage() {
 
   }, [router, token]);
 
-  if (!token) return <PageLoader />; // Show loading state while checking auth
+  if (!token) return <PageLoader />;
 
   return <WatchlistPage token={token} />
 }

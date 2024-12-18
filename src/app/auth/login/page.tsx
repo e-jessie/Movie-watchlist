@@ -16,32 +16,12 @@ export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
 
-  // const handleLogin = async (data: { email: string; password: string }) => {
-  // const {email, password} = data;
-
-  //   try {
-  //     setError(null);
-  //     await signInWithEmailAndPassword(auth, data.email, data.password);
-  //     localStorage.setItem("isLoggedIn", "true"); 
-  //     router.push("/homepage");
-  //   } 
-  //   catch (err: unknown) {
-  //     if (err instanceof FirebaseError) {
-  //       setError(err.message); 
-  //       console.error("Firebase Error:", err.message);
-  //     }
-  //     else {
-  //       setError("An unexpected error occurred.");
-  //       console.error("Unknown Error:", err);
-  //     }
-  //   }
-  // };
 
   const handleLogin = async (data: { email: string; password: string }) => {
     const { email, password } = data
     try {
       setError(null);
-      console.log("Sending data to API:", { email, password });  //checking log request in console
+      console.log("Sending data to API:", { email, password }); 
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,10 +63,10 @@ export default function LoginPage() {
 
 
   return (
-    <div className="flex flex-col gap-4 w-full mx-auto px-6 py-12 sm:px-10 sm:max-w-[45%] max-w-[85%] bg-gray-30 rounded-lg shadow-xl border">
-      <h1 className="mb-[80px] text-heading-3 text-gray-900">Login</h1>
+    <div className="flex flex-col gap-4 w-full m-auto px-6 py-12 sm:px-10 sm:max-w-[45%] max-w-[85%] bg-gray-30 rounded-lg shadow-xl border">
+      <h1 className="mb-[60px] text-heading-3 text-gray-900">Login</h1>
       <form
-        className="flex flex-col gap-[40px]"
+        className="flex flex-col gap-[35px]"
         onSubmit={handleSubmit(handleLogin)}
       >
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
@@ -122,7 +102,7 @@ export default function LoginPage() {
         >
           Login
         </button>
-        <p className="text-blue-500 mt-4 cursor-pointer text-center" onClick={() => handleForgotPassword("user_email@example.com")}>
+        <p className="text-blue-500 cursor-pointer text-center" onClick={() => handleForgotPassword("user_email@example.com")}>
           Forgot Password?
         </p>
       </form>

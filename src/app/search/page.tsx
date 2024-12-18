@@ -29,7 +29,7 @@ function SearchResultsPage({ token }: { token: string }) {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState<{ name: string, watchlist: Movie[] }>();
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [calendarMovieId, setCalendarMovieId] = useState<number | null>(null);
 
 
 
@@ -91,6 +91,7 @@ function SearchResultsPage({ token }: { token: string }) {
 
   const closeModal = () => {
     setSelectedMovie(null);
+    setCalendarMovieId(null)
   };
 
 
@@ -108,7 +109,7 @@ function SearchResultsPage({ token }: { token: string }) {
         <h1 className="flex justify-center text-xl text-red-500">Your search for <span className="font-extrabold">&quot;{query}&quot;</span> returned no results.</h1>
       )}
       {searchResults.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
           {searchResults.map((movie) => (
             <div
               key={movie.id}
@@ -155,18 +156,18 @@ function SearchResultsPage({ token }: { token: string }) {
                     />
                   </div>
                 )}
-                <Bell onClick={() => setShowCalendar(false)} />
+                <Bell onClick={() => setCalendarMovieId(selectedMovie.id)} />
 
-                {showCalendar && (
+                {calendarMovieId === selectedMovie.id && (
                   <CalendarPopup
                     movieTitle={selectedMovie.title}
                     movieDescription={selectedMovie.overview}
-                    onClose={() => setShowCalendar(false)} 
+                    onClose={() => setCalendarMovieId(null)} 
                   />
                 )}
               </div>
               {selectedMovie.overview ? (
-                <p className="text-gray-700 overflow-y-auto">{selectedMovie.overview}</p>
+                <p className="text-gray-700 h-[200px] overflow-y-auto">{selectedMovie.overview}</p>
               ) : (
                 <p className="text-sm text-red-400 overflow-y-auto"> No Description</p>
               )}
@@ -207,7 +208,7 @@ function SearchResultsPage({ token }: { token: string }) {
         </div>
       )}
 
-      <     ScrollToTop />
+      <div className="flex justify-center"><ScrollToTop /></div>
     </div>
   );
 }
